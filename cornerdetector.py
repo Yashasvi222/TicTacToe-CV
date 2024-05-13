@@ -6,7 +6,7 @@ def detect_and_label_corners(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
     # Detect corners using Shi-Tomasi corner detection
-    corners = cv2.goodFeaturesToTrack(gray, maxCorners=14, qualityLevel=0.01, minDistance=10)
+    corners = cv2.goodFeaturesToTrack(gray, maxCorners=12, qualityLevel=0.01, minDistance=10)
 
     # If no corners are found, return the original image
     if corners is None:
@@ -28,19 +28,29 @@ def detect_and_label_corners(image):
     return labeled_image
 
 def main():
-    # Read the input image
-    image = cv2.imread("TicTacToe-CV\\TTT.png")  # Replace 'input_image.jpg' with your image file name
-    
-    if image is None:
-        print("Error: Unable to load image.")
-        return
+    # Initialize the camera
+    cap = cv2.VideoCapture(0)
 
-    # Detect and label corners
-    labeled_image = detect_and_label_corners(image)
+    while True:
+        # Read the frame from the camera
+        ret, frame = cap.read()
 
-    # Display the image with detected and labeled corners
-    cv2.imshow('Image with Labeled Corners', labeled_image)
-    cv2.waitKey(0)
+        if not ret:
+            print("Error: Unable to capture frame.")
+            break
+
+        # Detect and label corners
+        labeled_frame = detect_and_label_corners(frame)
+
+        # Display the frame with detected and labeled corners
+        cv2.imshow('Camera Feed with Labeled Corners', labeled_frame)
+
+        # Break the loop with 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Release the camera and close all windows
+    cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
